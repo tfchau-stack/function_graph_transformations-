@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>平行線與截線角度大師 Parallel Lines & Transversal Master</title>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; touch-action: manipulation; }
+    
+    html, body { 
+      width: 100%; 
+      height: 100vh; 
+      margin: 0; 
+      padding: 10px; 
+      background-color: #f0f4f8; 
+      overflow: auto; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      -webkit-user-select: none; 
+      user-select: none; 
+    }
+    
+    .app-wrapper {
+      width: 100%;
+      max-width: 1100px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* iPad 模擬視窗樣式 */
+    .app-wrapper.ipad-portrait {
+      width: 768px !important;
+      height: 1024px !important;
+      max-width: 100% !important;
+      border: 12px solid #2c3e50;
+      border-radius: 36px;
+      padding: 16px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+      background: #f0f4f8;
+      margin: 10px auto;
+      overflow-y: auto;
+    }
+
+    .app-wrapper.ipad-landscape {
+      width: 1024px !important;
+      height: 768px !important;
+      max-width: 100% !important;
+      border: 12px solid #2c3e50;
+      border-radius: 36px;
+      padding: 16px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+      background: #f0f4f8;
+      margin: 10px auto;
+      overflow-y: auto;
+    }
+
+    .top-bar { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      width: 100%; 
+    }
+    h1 { color: #2c3e50; margin: 0; font-size: 24px; font-weight: bold; }
+    
+    .lang-btn-group { display: flex; gap: 8px; }
+    .lang-btn { 
+      background-color: #7f8c8d; 
+      color: white; 
+      border: none; 
+      padding: 10px 14px; 
+      border-radius: 8px; 
+      font-weight: bold; 
+      font-size: 15px; 
+      cursor: pointer; 
+      min-height: 44px;
+    }
+    .lang-btn.active { background-color: #3498db; }
+
+    .btn-ipad-style { background-color: #8e44ad !important; }
+    .btn-ipad-style.active-ipad { background-color: #e67e22 !important; }
+
+    .dashboard { 
+      display: flex; 
+      width: 100%; 
+      background: #ffffff; 
+      padding: 10px 20px; 
+      border-radius: 12px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+      justify-content: space-around; 
+      align-items: center; 
+    }
+    .dash-card { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #34495e; font-size: 18px; }
+    .dash-card span.value { font-size: 22px; color: #e67e22; }
+    .level-badge { background: #f1c40f; color: #2c3e50; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 16px; text-transform: uppercase; }
+
+    .nav-buttons { display: flex; gap: 8px; width: 100%; justify-content: space-between; }
+    button.mode-btn { 
+      flex: 1;
+      padding: 12px 6px; 
+      font-size: 16px; 
+      font-weight: bold; 
+      border: 2px solid #3498db; 
+      background-color: white; 
+      color: #3498db; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent; 
+    }
+    button.mode-btn.active { background-color: #3498db; color: white; }
+    
+    button.test-btn { border-color: #2ecc71; color: #2ecc71; }
+    button.test-btn.active { background-color: #2ecc71; color: white; }
+
+    button.test-hard-btn { border-color: #e74c3c; color: #e74c3c; }
+    button.test-hard-btn.active { background-color: #e74c3c; color: white; }
+
+    .container { 
+      display: flex; 
+      flex: 1;
+      gap: 16px; 
+      background: white; 
+      padding: 16px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+      width: 100%; 
+      position: relative; 
+      overflow: hidden;
+      align-items: flex-start;
+    }
+    
+    canvas { 
+      border: 2px solid #ecf0f1; 
+      border-radius: 10px; 
+      background-color: #fafafa; 
+      touch-action: none; 
+      cursor: pointer; 
+      width: 380px;
+      height: 380px;
+      flex-shrink: 0;
+    }
+    
+    .info-panel { 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: flex-start;
+      gap: 12px; 
+      height: 100%;
+      overflow-y: auto;
+    }
+    .title { font-size: 22px; font-weight: bold; color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 6px; }
+    .description { font-size: 18px; color: #444; line-height: 1.5; font-weight: 500; }
+    
+    .angle-list { display: flex; flex-direction: column; gap: 8px; }
+    .angle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 8px; font-weight: bold; font-size: 18px; }
+    
+    .equation { 
+      background-color: #f8f9fa; 
+      border: 2px solid #e9ecef; 
+      padding: 12px; 
+      border-radius: 10px; 
+      font-size: 20px; 
+      font-weight: bold; 
+      color: #2c3e50; 
+      text-align: center; 
+      line-height: 1.6; 
+    }
+    .color-val { padding: 3px 8px; border-radius: 6px; color: white; display: inline-block; }
+
+    .slider-control { display: flex; flex-direction: column; gap: 8px; background: #eef2f5; padding: 12px 16px; border-radius: 10px; font-weight: bold; font-size: 18px; }
+    .slider-row { display: flex; align-items: center; gap: 12px; }
+    .slider-row input[type=range] { flex: 1; height: 38px; cursor: pointer; }
+
+    .quiz-box { display: flex; flex-direction: column; gap: 12px; background: #fdfefe; border: 2px solid #2ecc71; padding: 16px; border-radius: 12px; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; }
+
+    .quiz-input-group { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-input-row { display: flex; gap: 10px; align-items: center; font-size: 20px; font-weight: bold; color: #2c3e50; }
+    .quiz-input-row input { padding: 8px; font-size: 22px; width: 100px; border: 2px solid #bdc3c7; border-radius: 8px; text-align: center; font-weight: bold; height: 46px; }
+    
+    .submit-btn-style { 
+      padding: 12px 20px; 
+      background: #2ecc71; 
+      color: white; 
+      border: none; 
+      border-radius: 8px; 
+      font-weight: bold; 
+      font-size: 18px; 
+      cursor: pointer; 
+      min-height: 48px;
+      width: 100%;
+      margin-top: 4px;
+    }
+    
+    .progress-bar-container { width: 100%; background: #ecf0f1; border-radius: 10px; height: 12px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: #2ecc71; width: 0%; transition: width 0.3s; }
+    
+    .feedback { font-weight: bold; font-size: 19px; min-height: 28px; line-height: 1.4; }
+    .step-box { background: #eef7ff; border: 2px solid #3498db; padding: 14px; border-radius: 10px; font-size: 17px; color: #2c3e50; font-weight: bold; margin-top: 6px; line-height: 1.6; }
+
+    .next-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    }
+
+    .xp-popup { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 36px; font-weight: 900; color: #f1c40f; text-shadow: 0 2px 10px rgba(0,0,0,0.3); pointer-events: none; opacity: 0; transition: all 0.8s ease-out; z-index: 10; }
+    .xp-popup.show { opacity: 1; transform: translate(-50%, -100%) scale(1.3); }
+
+    .result-card { background: #f4fbf7; border: 3px solid #2ecc71; border-radius: 12px; padding: 20px; text-align: center; display: flex; flex-direction: column; gap: 12px; }
+    .result-score { font-size: 28px; font-weight: bold; color: #2ecc71; }
+    .badge-earned { font-size: 20px; font-weight: bold; color: #f39c12; margin: 2px 0; }
+    .restart-btn { background: #3498db; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; min-height: 50px; }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper" id="app-wrapper">
+  <div class="top-bar">
+    <h1 id="app-title">平行線與截線角度大師</h1>
+    <div class="lang-btn-group">
+      <button class="lang-btn btn-ipad-style" onclick="toggleiPadMode()" id="btn-ipad">📱 iPad 模式</button>
+      
+      <button class="lang-btn active" onclick="setLanguage('zh')" id="btn-lang-zh">繁體中文</button>
+      <button class="lang-btn" onclick="setLanguage('en')" id="btn-lang-en">English</button>
+      <button class="lang-btn" onclick="setLanguage('bilingual')" id="btn-lang-bi">雙語 Bilingual</button>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="dash-card">
+      <span id="lbl-level">等級：</span>
+      <span class="level-badge" id="player-level">初學者 1</span>
+    </div>
+    <div class="dash-card">
+      <span id="lbl-xp">經驗值 (XP)：</span>
+      <span class="value" id="player-xp">0 ⭐</span>
+    </div>
+    <div class="dash-card">
+      <span id="lbl-streak">連勝：</span>
+      <span class="value" id="player-streak">0 🔥</span>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button id="btn-corr" class="mode-btn active" onclick="setTopic('corr')">同位角 Corresponding Angles</button>
+    <button id="btn-alt" class="mode-btn" onclick="setTopic('alt')">內錯角 Alternate Angles</button>
+    <button id="btn-int" class="mode-btn" onclick="setTopic('int')">同旁內角 Interior Angles</button>
+    <button id="btn-test-easy" class="mode-btn test-btn" onclick="setTopic('test-easy')">🟢 初級挑戰 (25題)</button>
+    <button id="btn-test-hard" class="mode-btn test-hard-btn" onclick="setTopic('test-hard')">🔴 高級挑戰 (25題)</button>
+  </div>
+
+  <div class="container">
+    <div id="xp-popup" class="xp-popup">+100 XP</div>
+    <canvas id="geometryCanvas" width="380" height="380"></canvas>
+    
+    <div class="info-panel">
+      <div id="topic-title" class="title">同位角 Corresponding Angles</div>
+      <div id="topic-desc" class="description">拖曳截線或使用下方滑桿調整角度。</div>
+
+      <div id="slider-container" class="slider-control">
+        <div class="slider-row">
+          <label id="slider-label" for="angle-slider">調整截線角度：</label>
+          <input type="range" id="angle-slider" min="20" max="160" value="70">
+          <span id="slider-val">70°</span>
+        </div>
+      </div>
+
+      <div id="exercise-panel" class="quiz-box" style="display: none;">
+        <div class="quiz-header">
+          <span id="progress-text">題目 1 / 25</span>
+        </div>
+
+        <div class="progress-bar-container">
+          <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+        
+        <div id="quiz-content">
+          <div id="quiz-question" style="font-weight: bold; font-size: 19px; margin: 6px 0;"></div>
+          
+          <div class="quiz-input-group" id="input-area">
+            <!-- 高級模式顯示 y 輸入框 -->
+            <div class="quiz-input-row" id="row-input-y" style="display: none;">
+              <span style="color:#f39c12;">Step 1: y = </span>
+              <input type="number" id="user-answer-y" placeholder="°" pattern="[0-9]*" inputmode="numeric">
+              <span>°</span>
+            </div>
+
+            <!-- x 輸入框 -->
+            <div class="quiz-input-row" id="row-input-x">
+              <span id="lbl-x-step" style="color:#2980b9;">x = </span>
+              <input type="number" id="user-answer-x" placeholder="°" pattern="[0-9]*" inputmode="numeric">
+              <span>°</span>
+            </div>
+
+            <button onclick="submitAnswer()" id="submit-btn" class="submit-btn-style">提交答案</button>
+          </div>
+
+          <div id="feedback" class="feedback"></div>
+          <div id="step-display" class="step-box" style="display: none;"></div>
+          <button id="next-question-btn" class="next-btn" style="display: none;" onclick="nextQuestion()">進入下一題 / 完成 (Next / Close) ➔</button>
+        </div>
+
+        <div id="result-card" class="result-card" style="display: none;">
+          <div id="result-title" style="font-size: 24px; font-weight: bold;">關卡完成！</div>
+          <div id="badge-earned" class="badge-earned">🏅</div>
+          <div id="result-score" class="result-score">25 / 25</div>
+          <div id="xp-earned-msg" style="font-weight: bold; color: #e67e22; font-size: 18px;">+2500 XP Earned!</div>
+          <div id="result-msg" style="color: #555; font-size: 18px;">表現出色！</div>
+          <button class="restart-btn" id="restart-btn" onclick="restartTest()">再玩一次</button>
+        </div>
+      </div>
+
+      <div id="angle-display" class="angle-list"></div>
+      <div id="equation-display" class="equation"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let ipadState = 0; 
+
+  function toggleiPadMode() {
+    const wrapper = document.getElementById('app-wrapper');
+    const btn = document.getElementById('btn-ipad');
+
+    ipadState = (ipadState + 1) % 3;
+
+    if (ipadState === 1) {
+      wrapper.className = 'app-wrapper ipad-portrait';
+      btn.className = 'lang-btn btn-ipad-style active-ipad';
+      btn.innerText = '📱 iPad 直向';
+    } else if (ipadState === 2) {
+      wrapper.className = 'app-wrapper ipad-landscape';
+      btn.className = 'lang-btn btn-ipad-style active-ipad';
+      btn.innerText = '📱 iPad 橫向';
+    } else {
+      wrapper.className = 'app-wrapper';
+      btn.className = 'lang-btn btn-ipad-style';
+      btn.innerText = '📱 iPad 模式';
+    }
+    draw();
+  }
+
+  let currentLang = 'zh';
+  let currentTopic = 'corr';
+  let isDragging = false;
+  let targetUnknownAngleX = 0;
+  let targetUnknownAngleY = 0;
+  let currentSubTopic = '';
+  
+  let totalXP = 0;
+  let streakCount = 0;
+  
+  let currentQuestionIdx = 0;
+  let score = 0;
+  const TOTAL_QUESTIONS = 25;
+  let testDifficulty = 'easy';
+  let questionList = [];
+
+  const canvas = document.getElementById('geometryCanvas');
+  const ctx = canvas.getContext('2d');
+  const center = { x: canvas.width / 2, y: canvas.height / 2 };
+  const slider = document.getElementById('angle-slider');
+
+  const colors = { a: '#e74c3c', b: '#3498db', c: '#2ecc71', d: '#f39c12' };
+
+  let currentAngleDeg = 70; 
+
+  const i18n = {
+    zh: {
+      appTitle: "平行線與截線角度大師",
+      lblLevel: "等級：",
+      lblXP: "經驗值 (XP)：",
+      lblStreak: "連勝：",
+      corrBtn: "同位角 Corresponding Angles",
+      altBtn: "內錯角 Alternate Angles",
+      intBtn: "同旁內角 Interior Angles",
+      easyBtn: "🟢 初級挑戰 (25題)",
+      hardBtn: "🔴 高級挑戰 (25題)",
+      corrTitle: "平行線上的同位角 ﹝簡記：同位角，AB // CD﹞",
+      altTitle: "平行線上的內錯角 ﹝簡記：內錯角，AB // CD﹞",
+      intTitle: "平行線上的同旁內角 ﹝簡記：同旁內角，AB // CD﹞",
+      easyTitle: "初級關卡挑戰 (共 25 題)",
+      hardTitle: "高級關卡挑戰 (求解 y 與 x)",
+      corrDesc: "形成「F」字形 (F-shape)。當 AB // CD 時，同位角相等。",
+      altDesc: "形成「Z」字形 (Z-shape)。當 AB // CD 時，內錯角相等。",
+      intDesc: "形成「C」字形 (C-shape)。當 AB // CD 時，同旁內角互補 (和為 180°)。",
+      easyDesc: "25 條隨機題目：平行線基礎幾何求未知角 x。",
+      hardDesc: "25 條隨機進階題：先求中間角 y，再求未知角 x。",
+      sliderLabel: "調整截線角度：",
+      submit: "提交答案",
+      correct: "✅ 回答正確！+100 XP",
+      incorrect: "❌ 答案不正確。",
+      findValueEasy: "圖中，AB // CD，求 x 的度數：",
+      findValueHard: "圖中，AB // CD，請依序求出 y 與 x 的度數：",
+      qProgress: "題目",
+      completed: "關卡挑戰完成！",
+      retake: "再玩一次",
+      perfectMsg: "🏆 完美滿分！解鎖「平行線幾何大師」榮譽！",
+      passMsg: "👍 表現出色！繼續保持連勝升級！",
+      failMsg: "📘 多利用左側動態模擬器練習，再接再勵！",
+      angA: "角 a (Angle a)",
+      angB: "角 b (Angle b)"
+    },
+    en: {
+      appTitle: "Parallel Lines & Transversal Master",
+      lblLevel: "Level:",
+      lblXP: "XP Points:",
+      lblStreak: "Streak:",
+      corrBtn: "Corresponding Angles",
+      altBtn: "Alternate Angles",
+      intBtn: "Interior Angles",
+      easyBtn: "🟢 Easy Quest (25 Qs)",
+      hardBtn: "🔴 Hard Quest (25 Qs)",
+      corrTitle: "Corresponding Angles [corr. ∠s, AB // CD]",
+      altTitle: "Alternate Angles [alt. ∠s, AB // CD]",
+      intTitle: "Interior Angles on Same Side [int. ∠s, AB // CD]",
+      easyTitle: "Easy Quest (25 Questions)",
+      hardTitle: "Hard Quest (Solve for y & x)",
+      corrDesc: "Corresponding angles form an 'F' shape. When AB // CD, corresponding angles are equal.",
+      altDesc: "Alternate angles form a 'Z' shape. When AB // CD, alternate angles are equal.",
+      intDesc: "Interior angles on the same side form a 'C' shape. When AB // CD, their sum is 180°.",
+      easyDesc: "25 Randomized Questions: Find x on parallel lines.",
+      hardDesc: "25 Advanced Questions: Solve intermediate angle y first, then target angle x.",
+      sliderLabel: "Transversal Angle:",
+      submit: "Submit Answer",
+      correct: "✅ Correct! +100 XP",
+      incorrect: "❌ Incorrect.",
+      findValueEasy: "Given AB // CD, find x:",
+      findValueHard: "Given AB // CD, find y and x step-by-step:",
+      qProgress: "Question",
+      completed: "Quest Completed!",
+      retake: "Play Again",
+      perfectMsg: "🏆 PERFECT SCORE! Master of Parallel Lines!",
+      passMsg: "👍 Great effort! Keep going!",
+      failMsg: "📘 Practice with simulator and try again!",
+      angA: "Angle a",
+      angB: "Angle b"
+    },
+    bilingual: {
+      appTitle: "平行線與截線角度大師 (Parallel Lines)",
+      lblLevel: "等級 Level:",
+      lblXP: "經驗值 XP:",
+      lblStreak: "連勝 Streak:",
+      corrBtn: "同位角 Corresponding Angles",
+      altBtn: "內錯角 Alternate Angles",
+      intBtn: "同旁內角 Interior Angles",
+      easyBtn: "🟢 初級 Easy (25題)",
+      hardBtn: "🔴 高級 Hard (25題)",
+      corrTitle: "同位角 Corresponding Angles (corr. ∠s, AB // CD)",
+      altTitle: "內錯角 Alternate Angles (alt. ∠s, AB // CD)",
+      intTitle: "同旁內角 Interior Angles (int. ∠s, AB // CD)",
+      easyTitle: "初級挑戰 Easy Quest (25 Qs)",
+      hardTitle: "高級挑戰 Hard Quest (求 y 與 x)",
+      corrDesc: "形成 'F' 形 (F-shape). AB // CD 時兩角相等 (Equal).",
+      altDesc: "形成 'Z' 形 (Z-shape). AB // CD 時兩角相等 (Equal).",
+      intDesc: "形成 'C' 形 (C-shape). AB // CD 時兩角之和為 180° (Sum = 180°).",
+      easyDesc: "25 條隨機題目 / 25 Randomized Questions.",
+      hardDesc: "25 條進階題目：先求 y，再求 x / Solve for y and x.",
+      sliderLabel: "截線角度 Transversal Angle:",
+      submit: "提交答案 Submit",
+      correct: "✅ 正確 Correct! +100 XP",
+      incorrect: "❌ 錯誤 Incorrect.",
+      findValueEasy: "已知 AB // CD，求 x / Given AB // CD, find x:",
+      findValueHard: "已知 AB // CD，求 y 及 x / Given AB // CD, find y & x:",
+      qProgress: "題目 Question",
+      completed: "關卡完成 Quest Completed!",
+      retake: "再玩一次 Play Again",
+      perfectMsg: "🏆 滿分！ Perfect score!",
+      passMsg: "👍 表現不錯！ Good effort!",
+      failMsg: "📘 建議多加練習！ Practice again!",
+      angA: "角 a / Angle a",
+      angB: "角 b / Angle b"
+    }
+  };
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn-group .lang-btn').forEach(b => {
+      if (b.id !== 'btn-ipad') b.classList.remove('active');
+    });
+    document.getElementById(`btn-lang-${lang.substring(0, 2)}`).classList.add('active');
+    updateUIStrings();
+    draw();
+  }
+
+  function updateUIStrings() {
+    const t = i18n[currentLang];
+    document.getElementById('app-title').innerText = t.appTitle;
+    document.getElementById('lbl-level').innerText = t.lblLevel;
+    document.getElementById('lbl-xp').innerText = t.lblXP;
+    document.getElementById('lbl-streak').innerText = t.lblStreak;
+    document.getElementById('btn-corr').innerText = t.corrBtn;
+    document.getElementById('btn-alt').innerText = t.altBtn;
+    document.getElementById('btn-int').innerText = t.intBtn;
+    document.getElementById('btn-test-easy').innerText = t.easyBtn;
+    document.getElementById('btn-test-hard').innerText = t.hardBtn;
+    document.getElementById('slider-label').innerText = t.sliderLabel;
+    document.getElementById('submit-btn').innerText = t.submit;
+    document.getElementById('restart-btn').innerText = t.retake;
+    updateLevelTitle();
+  }
+
+  function updateLevelTitle() {
+    let lvl = "初學者 1 🌱";
+    if (totalXP >= 5000) lvl = "幾何宗師 👑";
+    else if (totalXP >= 3000) lvl = "高級專家 💎";
+    else if (totalXP >= 1500) lvl = "幾何學者 ⚡";
+    else if (totalXP >= 600) lvl = "初學者 2 📜";
+    document.getElementById('player-level').innerText = lvl;
+  }
+
+  function showXPPop(text) {
+    const popup = document.getElementById('xp-popup');
+    popup.innerText = text;
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 800);
+  }
+
+  function setTopic(topic) {
+    currentTopic = topic;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    
+    const activeBtnId = (topic === 'test-easy') ? 'btn-test-easy' : (topic === 'test-hard' ? 'btn-test-hard' : `btn-${topic}`);
+    document.getElementById(activeBtnId).classList.add('active');
+
+    const isTest = topic.startsWith('test');
+    document.getElementById('exercise-panel').style.display = isTest ? 'flex' : 'none';
+    document.getElementById('slider-container').style.display = isTest ? 'none' : 'flex';
+
+    if (isTest) {
+      testDifficulty = (topic === 'test-easy') ? 'easy' : 'hard';
+      startNewTest();
+    } else {
+      document.getElementById('angle-display').style.display = 'flex';
+      document.getElementById('equation-display').style.display = 'block';
+    }
+    draw();
+  }
+
+  slider.addEventListener('input', (e) => {
+    currentAngleDeg = parseFloat(e.target.value);
+    document.getElementById('slider-val').innerText = `${currentAngleDeg}°`;
+    draw();
+  });
+
+  function handlePointerStart(x, y) {
+    if (currentTopic.startsWith('test')) return;
+    isDragging = true;
+    handlePointerMove(x, y);
+  }
+
+  function handlePointerMove(x, y) {
+    if (!isDragging || currentTopic.startsWith('test')) return;
+    const rect = canvas.getBoundingClientRect();
+    const canvasX = x - rect.left - center.x;
+    const canvasY = y - rect.top - center.y;
+    let angleRad = Math.atan2(canvasY, canvasX);
+    let deg = Math.round((angleRad * 180) / Math.PI);
+    if (deg < 0) deg += 360;
+    
+    let targetDeg = deg % 180;
+    if (targetDeg < 25) targetDeg = 25;
+    if (targetDeg > 155) targetDeg = 155;
+
+    currentAngleDeg = targetDeg;
+    slider.value = currentAngleDeg;
+    document.getElementById('slider-val').innerText = `${currentAngleDeg}°`;
+    draw();
+  }
+
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    handlePointerStart(touch.clientX, touch.clientY);
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    handlePointerMove(touch.clientX, touch.clientY);
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', () => { isDragging = false; });
+  canvas.addEventListener('mousedown', (e) => handlePointerStart(e.clientX, e.clientY));
+  canvas.addEventListener('mousemove', (e) => handlePointerMove(e.clientX, e.clientY));
+  canvas.addEventListener('mouseup', () => { isDragging = false; });
+
+  function startNewTest() {
+    currentQuestionIdx = 0;
+    score = 0;
+    streakCount = 0;
+    document.getElementById('player-streak').innerText = `0 🔥`;
+    document.getElementById('quiz-content').style.display = 'block';
+    document.getElementById('result-card').style.display = 'none';
+
+    questionList = [];
+    const types = ['corr', 'alt', 'int'];
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      const type = types[i % types.length];
+      const angle = Math.floor(Math.random() * 95) + 35; 
+      questionList.push({ type, angle });
+    }
+    for (let i = questionList.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questionList[i], questionList[j]] = [questionList[j], questionList[i]];
+    }
+
+    generateTestQuestion();
+  }
+
+  function generateTestQuestion() {
+    const t = i18n[currentLang];
+    document.getElementById('feedback').innerText = '';
+    document.getElementById('step-display').style.display = 'none';
+    document.getElementById('step-display').innerHTML = '';
+    document.getElementById('next-question-btn').style.display = 'none';
+    document.getElementById('input-area').style.display = 'flex';
+    
+    document.getElementById('user-answer-x').value = '';
+    document.getElementById('user-answer-y').value = '';
+    document.getElementById('user-answer-x').disabled = false;
+    document.getElementById('user-answer-y').disabled = false;
+    document.getElementById('submit-btn').disabled = false;
+    
+    document.getElementById('progress-text').innerText = `${t.qProgress} ${currentQuestionIdx + 1} / ${TOTAL_QUESTIONS}`;
+    const progressPercent = ((currentQuestionIdx + 1) / TOTAL_QUESTIONS) * 100;
+    document.getElementById('progress-bar-fill').style.width = `${progressPercent}%`;
+
+    const qData = questionList[currentQuestionIdx];
+    currentSubTopic = qData.type;
+    currentAngleDeg = qData.angle;
+
+    if (testDifficulty === 'easy') {
+      document.getElementById('row-input-y').style.display = 'none';
+      document.getElementById('lbl-x-step').innerText = 'x = ';
+      if (currentSubTopic === 'corr' || currentSubTopic === 'alt') {
+        targetUnknownAngleX = currentAngleDeg;
+      } else if (currentSubTopic === 'int') {
+        targetUnknownAngleX = 180 - currentAngleDeg;
+      }
+    } else {
+      // 高級題：配置 y 與 x 的正確答案
+      document.getElementById('row-input-y').style.display = 'flex';
+      document.getElementById('lbl-x-step').innerText = 'Step 2: x = ';
+      
+      if (currentSubTopic === 'corr') {
+        targetUnknownAngleY = 180 - currentAngleDeg; // 直線上的鄰角
+        targetUnknownAngleX = targetUnknownAngleY;   // 內錯角
+      } else if (currentSubTopic === 'alt') {
+        targetUnknownAngleY = currentAngleDeg;       // 對頂角
+        targetUnknownAngleX = targetUnknownAngleY;   // 同位角
+      } else if (currentSubTopic === 'int') {
+        targetUnknownAngleY = currentAngleDeg;       // 同位角
+        targetUnknownAngleX = 180 - targetUnknownAngleY; // 直線上的鄰角
+      }
+    }
+    drawTestQuestion(currentSubTopic);
+  }
+
+  function submitAnswer() {
+    const userValX = parseInt(document.getElementById('user-answer-x').value);
+    const userValY = parseInt(document.getElementById('user-answer-y').value);
+    const feedback = document.getElementById('feedback');
+    const stepBox = document.getElementById('step-display');
+    const t = i18n[currentLang];
+    
+    if (isNaN(userValX)) return;
+    if (testDifficulty === 'hard' && isNaN(userValY)) return;
+
+    let isCorrect = false;
+    let stepText = "";
+
+    if (testDifficulty === 'easy') {
+      isCorrect = (userValX === targetUnknownAngleX);
+      if (currentSubTopic === 'corr') {
+        stepText = `x = <u style="color:#e67e22;">${targetUnknownAngleX}°</u> ﹝同位角，AB // CD / corr. ∠s, AB // CD﹞`;
+      } else if (currentSubTopic === 'alt') {
+        stepText = `x = <u style="color:#e67e22;">${targetUnknownAngleX}°</u> ﹝內錯角，AB // CD / alt. ∠s, AB // CD﹞`;
+      } else if (currentSubTopic === 'int') {
+        stepText = `x + ${currentAngleDeg}° = 180° ﹝同旁內角，AB // CD / int. ∠s, AB // CD﹞<br>x = 180° - ${currentAngleDeg}° = <u style="color:#e67e22;">${targetUnknownAngleX}°</u>`;
+      }
+    } else {
+      // 高級題：雙重驗證 (y 與 x 均需正確)
+      isCorrect = (userValX === targetUnknownAngleX && userValY === targetUnknownAngleY);
+
+      if (currentSubTopic === 'corr') {
+        stepText = `
+          <strong>步驟 1 (Step 1)：求中間角 y (Find intermediate angle y)</strong><br>
+          y + ${currentAngleDeg}° = 180° ﹝直線上的鄰角 / adj. ∠s on st. line﹞<br>
+          y = 180° - ${currentAngleDeg}° = <u style="color:#f39c12;">${targetUnknownAngleY}°</u><br><br>
+          <strong>步驟 2 (Step 2)：求未知角 x (Find target angle x)</strong><br>
+          x = y = <u style="color:#e67e22;">${targetUnknownAngleX}°</u> ﹝內錯角，AB // CD / alt. ∠s, AB // CD﹞
+        `;
+      } else if (currentSubTopic === 'alt') {
+        stepText = `
+          <strong>步驟 1 (Step 1)：求中間角 y (Find intermediate angle y)</strong><br>
+          y = <u style="color:#f39c12;">${targetUnknownAngleY}°</u> ﹝對頂角 / vert. opp. ∠s﹞<br><br>
+          <strong>步驟 2 (Step 2)：求未知角 x (Find target angle x)</strong><br>
+          x = y = <u style="color:#e67e22;">${targetUnknownAngleX}°</u> ﹝同位角，AB // CD / corr. ∠s, AB // CD﹞
+        `;
+      } else if (currentSubTopic === 'int') {
+        stepText = `
+          <strong>步驟 1 (Step 1)：求中間角 y (Find intermediate angle y)</strong><br>
+          y = <u style="color:#f39c12;">${targetUnknownAngleY}°</u> ﹝同位角，AB // CD / corr. ∠s, AB // CD﹞<br><br>
+          <strong>步驟 2 (Step 2)：求未知角 x (Find target angle x)</strong><br>
+          x + y = 180° ﹝直線上的鄰角 / adj. ∠s on st. line﹞<br>
+          x = 180° - ${targetUnknownAngleY}° = <u style="color:#e67e22;">${targetUnknownAngleX}°</u>
+        `;
+      }
+    }
+
+    stepBox.style.display = 'block';
+    stepBox.innerHTML = `<strong>完整幾何推導步驟 (Solution Steps)：</strong><br>${stepText}`;
+
+    if (isCorrect) {
+      score++;
+      streakCount++;
+      let earnedXP = testDifficulty === 'easy' ? 100 : 150;
+
+      totalXP += earnedXP;
+      document.getElementById('player-xp').innerText = `${totalXP} ⭐`;
+      document.getElementById('player-streak').innerText = `${streakCount} 🔥`;
+      updateLevelTitle();
+      showXPPop(`+${earnedXP} XP!`);
+
+      feedback.style.color = '#27ae60';
+      feedback.innerText = t.correct;
+    } else {
+      streakCount = 0;
+      document.getElementById('player-streak').innerText = `0 🔥`;
+      feedback.style.color = '#c0392b';
+      
+      if (testDifficulty === 'easy') {
+        feedback.innerText = `${t.incorrect} (正確答案是 x = ${targetUnknownAngleX}°)`;
+      } else {
+        let errDetail = [];
+        if (userValY !== targetUnknownAngleY) errDetail.push(`y 應為 ${targetUnknownAngleY}°`);
+        if (userValX !== targetUnknownAngleX) errDetail.push(`x 應為 ${targetUnknownAngleX}°`);
+        feedback.innerText = `${t.incorrect} (${errDetail.join('，')})`;
+      }
+    }
+
+    document.getElementById('user-answer-x').disabled = true;
+    document.getElementById('user-answer-y').disabled = true;
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('next-question-btn').style.display = 'block';
+  }
+
+  function nextQuestion() {
+    currentQuestionIdx++;
+    if (currentQuestionIdx < TOTAL_QUESTIONS) {
+      generateTestQuestion();
+    } else {
+      showFinalResultCard();
+    }
+  }
+
+  function showFinalResultCard() {
+    const t = i18n[currentLang];
+    document.getElementById('quiz-content').style.display = 'none';
+    document.getElementById('result-card').style.display = 'flex';
+    document.getElementById('result-title').innerText = t.completed;
+    document.getElementById('result-score').innerText = `${score} / ${TOTAL_QUESTIONS}`;
+
+    const badgeElem = document.getElementById('badge-earned');
+    let msg = t.passMsg;
+    
+    if (score === TOTAL_QUESTIONS) {
+      msg = t.perfectMsg;
+      badgeElem.innerText = "🏆 平行線幾何大師 (PARALLEL MASTER)";
+    } else if (score >= 20) {
+      badgeElem.innerText = "🥇 金牌榮譽 (GOLD STAR)";
+    } else if (score >= 15) {
+      badgeElem.innerText = "🥈 銀牌勇士 (SILVER MEDAL)";
+    } else {
+      msg = t.failMsg;
+      badgeElem.innerText = "📘 銅牌學徒 (BRONZE SHIELD)";
+    }
+
+    const totalEarned = score * (testDifficulty === 'easy' ? 100 : 150);
+    document.getElementById('xp-earned-msg').innerText = `關卡總計獲得: ${totalEarned} XP!`;
+    document.getElementById('result-msg').innerText = msg;
+  }
+
+  function restartTest() {
+    startNewTest();
+  }
+
+  function drawParallelBase() {
+    const y1 = 130;
+    const y2 = 250;
+
+    ctx.beginPath();
+    ctx.moveTo(30, y1);
+    ctx.lineTo(350, y1);
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 3.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(30, y2);
+    ctx.lineTo(350, y2);
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 3.5;
+    ctx.stroke();
+
+    drawArrow(220, y1, true);
+    drawArrow(220, y2, true);
+
+    ctx.font = 'italic bold 20px Times New Roman, Arial';
+    ctx.fillStyle = '#2c3e50';
+    ctx.fillText('A', 15, y1 + 6);
+    ctx.fillText('B', 360, y1 + 6);
+    ctx.fillText('C', 15, y2 + 6);
+    ctx.fillText('D', 360, y2 + 6);
+
+    return { y1, y2 };
+  }
+
+  function drawArrow(x, y, isRight = true) {
+    ctx.beginPath();
+    const dir = isRight ? 1 : -1;
+    ctx.moveTo(x - dir * 12, y - 7);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x - dir * 12, y + 7);
+    ctx.fillStyle = '#2c3e50';
+    ctx.fill();
+  }
+
+  function drawTransversal(y1, y2, angleDeg) {
+    const rad = (angleDeg * Math.PI) / 180;
+    const dy = y2 - y1; 
+    const dx = dy / Math.tan(rad);
+
+    const x2 = center.x + dx / 2;
+    const x1 = center.x - dx / 2;
+
+    const extX1 = x1 - (45 / Math.tan(rad));
+    const extY1 = y1 - 45;
+    const extX2 = x2 + (45 / Math.tan(rad));
+    const extY2 = y2 + 45;
+
+    ctx.beginPath();
+    ctx.moveTo(extX1, extY1);
+    ctx.lineTo(extX2, extY2);
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 3.5;
+    ctx.stroke();
+
+    return { p1: { x: x1, y: y1 }, p2: { x: x2, y: y2 } };
+  }
+
+  function drawAngleArc(p, startAngle, endAngle, radius, color, labelText) {
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.arc(p.x, p.y, radius, startAngle, endAngle, false);
+    ctx.closePath();
+    ctx.fillStyle = color + '33';
+    ctx.fill();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    let diff = (endAngle - startAngle + 2 * Math.PI) % (2 * Math.PI);
+    if (diff === 0) diff = 2 * Math.PI;
+    let midAngle = startAngle + diff / 2;
+    
+    const labelRadius = radius * 0.7;
+    const lx = p.x + labelRadius * Math.cos(midAngle);
+    const ly = p.y + labelRadius * Math.sin(midAngle);
+
+    ctx.font = 'italic bold 18px Times New Roman, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    ctx.strokeText(labelText, lx, ly);
+
+    ctx.fillStyle = '#111111';
+    ctx.fillText(labelText, lx, ly);
+  }
+
+  function drawTestQuestion(subTopic) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const t = i18n[currentLang];
+    document.getElementById('topic-title').innerText = testDifficulty === 'easy' ? t.easyTitle : t.hardTitle;
+    document.getElementById('topic-desc').innerHTML = testDifficulty === 'easy' ? t.easyDesc : t.hardDesc;
+    document.getElementById('angle-display').style.display = 'none';
+    document.getElementById('equation-display').style.display = 'none';
+
+    const { y1, y2 } = drawParallelBase();
+    const { p1, p2 } = drawTransversal(y1, y2, currentAngleDeg);
+    const rad = (currentAngleDeg * Math.PI) / 180;
+
+    const knownVal = currentAngleDeg;
+    
+    if (testDifficulty === 'easy') {
+      if (subTopic === 'corr') {
+        drawAngleArc(p1, 0, rad, 38, colors.a, `${knownVal}°`);
+        drawAngleArc(p2, 0, rad, 38, colors.b, `x`);
+      } else if (subTopic === 'alt') {
+        drawAngleArc(p1, rad, Math.PI, 38, colors.a, `${knownVal}°`);
+        drawAngleArc(p2, Math.PI + rad, 2 * Math.PI, 38, colors.b, `x`);
+      } else if (subTopic === 'int') {
+        drawAngleArc(p1, rad, Math.PI, 38, colors.a, `${knownVal}°`);
+        drawAngleArc(p2, Math.PI, Math.PI + rad, 38, colors.b, `x`);
+      }
+      document.getElementById('quiz-question').innerText = t.findValueEasy;
+    } else {
+      // 高級關卡：繪製已知角、中間角 y 與目標角 x
+      if (subTopic === 'corr') {
+        drawAngleArc(p1, 0, rad, 38, colors.a, `${knownVal}°`);
+        drawAngleArc(p1, rad, Math.PI, 38, colors.d, `y`);
+        drawAngleArc(p2, Math.PI + rad, 2 * Math.PI, 38, colors.b, `x`);
+      } else if (subTopic === 'alt') {
+        drawAngleArc(p1, rad, Math.PI, 38, colors.a, `${knownVal}°`);
+        drawAngleArc(p1, Math.PI + rad, 2 * Math.PI, 38, colors.d, `y`);
+        drawAngleArc(p2, Math.PI + rad, 2 * Math.PI, 38, colors.b, `x`);
+      } else if (subTopic === 'int') {
+        drawAngleArc(p1, rad, Math.PI, 38, colors.a, `${knownVal}°`);
+        drawAngleArc(p2, rad, Math.PI, 38, colors.d, `y`);
+        drawAngleArc(p2, Math.PI, Math.PI + rad, 38, colors.b, `x`);
+      }
+      document.getElementById('quiz-question').innerText = t.findValueHard;
+    }
+  }
+
+  function draw() {
+    if (currentTopic.startsWith('test')) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const display = document.getElementById('angle-display');
+    const eqDisplay = document.getElementById('equation-display');
+    const t = i18n[currentLang];
+
+    const { y1, y2 } = drawParallelBase();
+    const { p1, p2 } = drawTransversal(y1, y2, currentAngleDeg);
+    const rad = (currentAngleDeg * Math.PI) / 180;
+    const degA = Math.round(currentAngleDeg);
+    const degSupp = 180 - degA;
+
+    if (currentTopic === 'corr') {
+      document.getElementById('topic-title').innerText = t.corrTitle;
+      document.getElementById('topic-desc').innerHTML = t.corrDesc;
+
+      drawAngleArc(p1, 0, rad, 38, colors.a, `a=${degA}°`);
+      drawAngleArc(p2, 0, rad, 38, colors.b, `b=${degA}°`);
+
+      display.innerHTML = `
+        <div class="angle-item" style="background:${colors.a}22; color:${colors.a}"><span>${t.angA}:</span> <span>${degA}°</span></div>
+        <div class="angle-item" style="background:${colors.b}22; color:${colors.b}"><span>${t.angB}:</span> <span>${degA}°</span></div>
+      `;
+      eqDisplay.innerHTML = `${t.corrTitle}<br>a = b = <span class="color-val" style="background:${colors.a}">${degA}°</span>`;
+
+    } else if (currentTopic === 'alt') {
+      document.getElementById('topic-title').innerText = t.altTitle;
+      document.getElementById('topic-desc').innerHTML = t.altDesc;
+
+      drawAngleArc(p1, rad, Math.PI, 38, colors.a, `a=${degA}°`);
+      drawAngleArc(p2, Math.PI + rad, 2 * Math.PI, 38, colors.b, `b=${degA}°`);
+
+      display.innerHTML = `
+        <div class="angle-item" style="background:${colors.a}22; color:${colors.a}"><span>${t.angA}:</span> <span>${degA}°</span></div>
+        <div class="angle-item" style="background:${colors.b}22; color:${colors.b}"><span>${t.angB}:</span> <span>${degA}°</span></div>
+      `;
+      eqDisplay.innerHTML = `${t.altTitle}<br>a = b = <span class="color-val" style="background:${colors.a}">${degA}°</span>`;
+
+    } else if (currentTopic === 'int') {
+      document.getElementById('topic-title').innerText = t.intTitle;
+      document.getElementById('topic-desc').innerHTML = t.intDesc;
+
+      drawAngleArc(p1, rad, Math.PI, 38, colors.a, `a=${degA}°`);
+      drawAngleArc(p2, Math.PI, Math.PI + rad, 38, colors.c, `b=${degSupp}°`);
+
+      display.innerHTML = `
+        <div class="angle-item" style="background:${colors.a}22; color:${colors.a}"><span>${t.angA}:</span> <span>${degA}°</span></div>
+        <div class="angle-item" style="background:${colors.c}22; color:${colors.c}"><span>${t.angB}:</span> <span>${degSupp}°</span></div>
+      `;
+      eqDisplay.innerHTML = `${t.intTitle}<br>a + b = <span class="color-val" style="background:${colors.a}">${degA}°</span> + <span class="color-val" style="background:${colors.c}">${degSupp}°</span> = 180°`;
+    }
+  }
+
+  draw();
+</script>
+</body>
+</html>
